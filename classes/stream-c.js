@@ -18,6 +18,7 @@ class CReadable extends Readable {
         let chunk = String(Math.random());
         //console.log(data);
         this.push(chunk);
+        
     }
 }
 
