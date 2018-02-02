@@ -9,7 +9,7 @@ class Transform extends stream.Transform {
         super(options);
     }          
     _transform (chunk, encoding, afterTransform) {
-        let data = '\nhex:\n'+chunk.toString('hex') 
+        let data = '\nhex:\n'+chunk.toString('hex') +'\n\n'
         afterTransform(null, data)
     };
 };

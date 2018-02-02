@@ -42,6 +42,6 @@ setTimeout(() => {
 
 */
 
-//issue 5 streams
-require('./classes/stream-c');
-require('./classes/hashStream');
+//issue 5 streams Домашнее задание к лекции 1.4 «Потоки Stream» 
+require('./classes/hashStream'); //Часть 1 + Часть 2
+require('./classes/stream-c'); //Дополнительное задание
