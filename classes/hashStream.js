@@ -15,8 +15,8 @@ class Transform extends stream.Transform {
 };
 
 var transformStream = new Transform();
-var inputStream = fs.createReadStream('../data.txt',opt);
-var outputStream = fs.createWriteStream('../stream-data.txt');
+var inputStream = fs.createReadStream('./data.txt',opt);
+var outputStream = fs.createWriteStream('./stream-data.txt');
 
 outputStream.write('md5:\n')
 process.stdout.write('md5:\n')

@@ -41,3 +41,7 @@ setTimeout(() => {
 }, 20000);
 
 */
+
+//issue 5 streams
+require('./classes/stream-c');
+require('./classes/hashStream');
