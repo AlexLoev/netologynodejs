@@ -3,30 +3,30 @@
 //const issue3 = require('./issue3');
 
 //issue4 Emmits Запускаем чат
-const fb = require('./classes/fbChat');
-const vk = require('./classes/vkChat');
-const wb = require('./classes/wbChat');
+// const fb = require('./classes/fbChat');
+// const vk = require('./classes/vkChat');
+// const wb = require('./classes/wbChat');
 
-var vkChatApp = new vk.vkChat('vk');
-var fbChatApp = new fb.fbChat('fb');
-var wbChatApp = new wb.wbChat('wb');
+// var vkChatApp = new vk.vkChat('vk');
+// var fbChatApp = new fb.fbChat('fb');
+// var wbChatApp = new wb.wbChat('wb');
 
-setTimeout(function() {
-    vkChatApp.close();
-}, 5000);
+// setTimeout(function() {
+//     vkChatApp.close();
+// }, 5000);
 
-setTimeout(function() {
-    fbChatApp.close();
-}, 10000);
+// setTimeout(function() {
+//     fbChatApp.close();
+// }, 10000);
 
-setTimeout(function() {
-    wbChatApp.close();
-}, 15000);
+// setTimeout(function() {
+//     wbChatApp.close();
+// }, 15000);
 
-//принудительно завершим приложение через 20 сек.
-setTimeout(function() {
-    process.exit();    
-}, 20000);
+// //принудительно завершим приложение через 20 сек.
+// setTimeout(function() {
+//     process.exit();    
+// }, 20000);
 
 
 /* просто проверил отлов неотловленных ошибок (работает!)
