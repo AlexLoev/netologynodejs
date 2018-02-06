@@ -43,5 +43,9 @@ setTimeout(() => {
 */
 
 //issue 5 streams Домашнее задание к лекции 1.4 «Потоки Stream» 
-require('./classes/hashStream'); //Часть 1 + Часть 2
-require('./classes/stream-c'); //Дополнительное задание
+//require('./classes/hashStream'); //Часть 1 + Часть 2
+//require('./classes/stream-c'); //Дополнительное задание
+
+//issue6 http Домашнее задание к лекции 2.1 «Создаем собственный переводчик, используя модуль http»
+
+require('./classes/TranslateSrv'); //просто запускаем сервер, описанный в модуле TranslateSrv
