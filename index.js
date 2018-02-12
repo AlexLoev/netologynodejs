@@ -48,4 +48,8 @@ setTimeout(() => {
 
 //issue6 http Домашнее задание к лекции 2.1 «Создаем собственный переводчик, используя модуль http»
 
-require('./classes/TranslateSrv'); //просто запускаем сервер, описанный в модуле TranslateSrv
+// require('./classes/TranslateSrv'); //просто запускаем сервер, описанный в модуле TranslateSrv
+
+//issue7 API with express «Создаем простое API, используя express»
+
+require('./classes/expresssrv'); //просто запускаем сервер для обработки запросов

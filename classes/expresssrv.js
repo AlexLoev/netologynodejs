@@ -1,5 +1,4 @@
 const express = require('express');
-const router = express.Router();
 const app = express();
 const bodyparser = require('body-parser');
 var RPC = require('../classes/rpcmethods');
