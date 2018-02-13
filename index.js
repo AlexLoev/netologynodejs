@@ -52,4 +52,8 @@ setTimeout(() => {
 
 //issue7 API with express «Создаем простое API, используя express»
 
-require('./classes/expresssrv'); //просто запускаем сервер для обработки запросов
+//require('./classes/expresssrv'); //просто запускаем сервер для обработки запросов
+
+//issue8 express routes Домашнее задание к лекции 2.3 «Роутинг в express»
+
+require('./classes/expresroutes'); //просто запускаем сервер для обработки запросов port 1338
