@@ -1,6 +1,6 @@
 //const issue1 = require('./issue1');
 //const issue2 = require('./issue2');
-//const issue3 = require('./issue3');
+const issue3 = require('./issue3');
 
 //issue4 Emmits Запускаем чат
 // const fb = require('./classes/fbChat');
@@ -56,4 +56,4 @@ setTimeout(() => {
 
 //issue8 express routes Домашнее задание к лекции 2.3 «Роутинг в express»
 
-require('./classes/expresroutes'); //просто запускаем сервер для обработки запросов port 1338
+//require('./classes/expresroutes'); //просто запускаем сервер для обработки запросов port 1338
