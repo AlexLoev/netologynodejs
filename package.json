@@ -1,0 +1,33 @@
+{
+  "name": "notebookjs",
+  "version": "1.0.0",
+  "description": "app to work with your own notebook",
+  "main": "index.js",
+  "directories": {
+    "test": "tests"
+  },
+  "dependencies": {
+    "body-parser": "^1.18.2",
+    "express": "^4.16.2",
+    "mongodb": "^3.0.2",
+    "pug": "^2.0.0-rc.4",
+    "socket.io": "^2.0.4"
+  },
+  "devDependencies": {},
+  "scripts": {
+    "test": "node index.js"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/AlexLoev/netologynodejs.git"
+  },
+  "keywords": [
+    "notebook"
+  ],
+  "author": "AlexLoev",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/AlexLoev/netologynodejs/issues"
+  },
+  "homepage": "https://github.com/AlexLoev/netologynodejs#readme"
+}
