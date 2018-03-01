@@ -59,4 +59,7 @@ setTimeout(() => {
 //require('./classes/expresroutes'); //просто запускаем сервер для обработки запросов port 1338
 
 //issue10 Домашнее задание к лекции 3.1 «Основы MongoDB»
-require('./classes/mongodbclient'); //запуск консольного приложения для MongoDB
+//require('./classes/mongodbclient'); //запуск консольного приложения для MongoDB
+
+//issue11 Все, что нужно знать про запросы в MongoDB
+require('./classes/notebook/api'); //запускает сервер на порт 1337

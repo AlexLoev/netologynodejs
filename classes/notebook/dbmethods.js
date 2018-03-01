@@ -65,6 +65,23 @@ async function updatecontactbyid(id, contact) {
     }
 };
 
+async function contactsetfavbyid(id, fav) {
+    try {
+        db = await mongoclient.connect(uri)
+        var collection = db.db(dbname).collection('contacts');
+        if (collection) {
+            var updateresult = await collection.findOneAndUpdate({_id: ObjectID(id)},{$set: {fav: fav}}, {returnNewDocument: 1});
+            log(updateresult);
+            if (updateresult.value._id) {
+                return updateresult.value._id;
+            } else {
+                return new Error(`Not matched by _id:${id}`); 
+            }
+        }
+    } catch (err) {
+        return new Error(err);
+    }
+};
 
 async function deletecontactbyid(id) {
     try {
@@ -104,7 +121,8 @@ async function searchcontacts(filter) {
         db = await mongoclient.connect(uri)
         var collection = db.db(dbname).collection('contacts');
         if (collection) {
-            var findresults = await collection.find(filter).toArray();
+            var regfilter = regexfilter(filter);
+            var findresults = await collection.find(regfilter).toArray();
             if (findresults) {
                 return findresults;
             } else {
@@ -116,14 +134,19 @@ async function searchcontacts(filter) {
     }
 };
 
-//var contact = {name: 'Nat', gender: 'F', tel: "115", skype: 'natali', language: ['fra']};
-// insertcontact(contact);
-//showcontacts(50,10);
-
-// var id = "5a90d753cd637e11788aac9e"
-//showcontact(id);
-//deletecontactbyid(id);
-// updatecontactbyid(id, contact)
+function regexfilter(filter) {
+    var regfilter = Object.assign({}, filter);
+    if (filter.name) {
+        regfilter.name = {'$regex': filter.name}
+    };
+    if (filter.tel) {
+        regfilter.tel = {'$regex': filter.tel}
+    };
+    if (filter.skype) {
+        regfilter.skype = {'$regex': filter.skype}
+    };    
+    return regfilter;
+};
 
 module.exports = {
     insertcontact,
@@ -131,5 +154,6 @@ module.exports = {
     selectcontactbyid,
     updatecontactbyid,
     deletecontactbyid,
-    searchcontacts
+    searchcontacts,
+    contactsetfavbyid
 };

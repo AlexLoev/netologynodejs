@@ -8,14 +8,25 @@ const log = console.log
 
 app.use(express.static(__dirname+'/client/')); //здесь будем хранить все файлы, которые понадобятся на клиенте
 app.use(bodyparser.json());
+app.use(bodyparser.urlencoded({extended: true}));
+app.set('view engine', 'pug');
+app.set('views',__dirname+'/views');
 
 app.get('/', (req,res) => {
-    res.sendFile(__dirname+'/index.html');
+    res.redirect('/contacts?fav=on'); //по умолчанию показываем избранные контакты
+});
+
+app.get('/contacts/new', (req,res) => {
+    var data = {
+        name: '',
+        tel: '',
+        skype: ''
+    }
+    res.render('inputcontact',{data, url: '/contacts', method: 'POST'});
 });
 
 app.get('/contacts/', (req, res) => {
-    if (req.query.name) {
-        log('search');
+    if (req.query) {
         search(req, res);
     } else {
         db.selectcontacts(0,25)
@@ -23,7 +34,7 @@ app.get('/contacts/', (req, res) => {
             if (contacts instanceof Error) {
                 dberr(contacts, res);
             } else {
-                res.json(contacts);
+                res.render('template', {data: contacts});
             }
         })
         .catch(err => {dberr(err, res)});
@@ -37,7 +48,7 @@ app.post('/contacts/', (req, res) => {
             if (id instanceof Error) {
                 dberr(id, res);
             } else {  
-                res.redirect(`/contacts/${id}`); //пока будем открывать страницу нового пользователя
+                res.redirect(`/contacts/`); //пока будем открывать страницу контактов
             }
         })
         .catch(err => dberr(err, res));
@@ -47,7 +58,9 @@ app.post('/contacts/', (req, res) => {
     }
 });
 
-app.put('/contacts/:id', (req, res) => {
+
+//используется вместо PUT, чтобы не заморачиваться с переопределением метода PUT в html form submit (там могут быть только post и get)
+app.post('/contacts/:id', (req, res) => {
     if (req.params.id) {
         if (req.body.name) {
             db.updatecontactbyid(req.params.id, req.body)
@@ -55,7 +68,7 @@ app.put('/contacts/:id', (req, res) => {
                 if (id instanceof Error) {
                     dberr(id, res);
                 } else {  
-                    res.redirect(`/contacts/${id}`); //пока будем открывать страницу нового пользователя
+                    res.redirect(`/contacts/`); //пока будем открывать страницу контактов
                 }
             })
             .catch(err => dberr(err, res));
@@ -69,6 +82,26 @@ app.put('/contacts/:id', (req, res) => {
     }
 });
 
+//добавляем контакт в избранное
+app.put('/contacts/setfav/:id&:fav', (req, res) => {
+    if (req.params.id) {
+        db.contactsetfavbyid(req.params.id,req.params.fav)
+        .then(id => {
+            if (id instanceof Error) {
+                dberr(id, res);
+            } else {  
+                res.statusCode = 200;
+                res.statusMessage = "Set favorite to "+req.params.fav;
+                res.end();
+            }
+        })
+        .catch(err => dberr(err, res));
+    } else {
+        res.statusCode = 400;
+        res.end('Please, enter a valid contact id');     
+    }
+});
+
 app.get('/contacts/:id', (req, res) => {
     if (req.params.id) {
         db.selectcontactbyid(req.params.id)
@@ -76,8 +109,7 @@ app.get('/contacts/:id', (req, res) => {
             if (contact instanceof Error) {
                 dberr(contact, res);
             } else {
-                log(contact);
-                res.json(contact);
+                res.render('inputcontact', {data: contact, url: '/contacts/'+contact._id, method: 'POST'});
             }
         })
         .catch(err => {dberr(err, res)})
@@ -95,7 +127,9 @@ app.delete('/contacts/:id', (req, res) => {
                 dberr(contact, res);
             } else {
                 if (contact.result.ok) {
-                    res.redirect('/contacts');
+                    res.statusCode = 200;
+                    res.statusMessage = "Deleted successfully";
+                    res.end();
                 } else {
                     dberr(new Error(`Can't delete document ${req.params.id}`), res);
                 }
@@ -108,18 +142,17 @@ app.delete('/contacts/:id', (req, res) => {
     }
 });
 
-http.listen(1337);
 
 function search(req, res) {
     query = req.query;
-    log(query);
+    clean(query);
     if (query) {
         db.searchcontacts(query)
         .then(contacts => {
             if (contacts instanceof Error) {
                 dberr(contacts, res);
             } else {
-                res.json(contacts);
+                res.render('template', {data: contacts, query});
             }
         })
         .catch(err => {dberr(err, res)})
@@ -134,3 +167,13 @@ function dberr(err, res) {
     res.statusMessage = err;
     res.end('DB Error');
 };
+
+function clean(obj) {
+    for (var propName in obj) { 
+        if (obj[propName] === null || obj[propName] === undefined || obj[propName] === '') {
+            delete obj[propName];
+        }
+    }
+};
+
+http.listen(1337);
