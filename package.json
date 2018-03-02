@@ -1,0 +1,31 @@
+{
+  "name": "simplechatjs",
+  "version": "1.0.0",
+  "description": "Simple Chat for use with Socket.io",
+  "main": "index.js",
+  "directories": {
+    "test": "tests"
+  },
+  "dependencies": {
+    "socket.io": "^2.0.4"
+  },
+  "devDependencies": {},
+  "scripts": {
+    "test": "node index"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/AlexLoev/netologynodejs.git"
+  },
+  "keywords": [
+    "chat",
+    "express",
+    "socket.io"
+  ],
+  "author": "AlexLoev",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/AlexLoev/netologynodejs/issues"
+  },
+  "homepage": "https://github.com/AlexLoev/netologynodejs#readme"
+}
