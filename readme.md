@@ -8,8 +8,8 @@
 Клонировать ветку с https://github.com/AlexLoev/netologynodejs/tree/issue6http
 Приложение не требует дополнительной установки пакетов с npm.
 
-Запуск из консоли 
-node index.js 
+Запуск из консоли
+`node index.js` 
 
 Для просмотра используется стандартный браузер: 
 http://localhost:3000/
