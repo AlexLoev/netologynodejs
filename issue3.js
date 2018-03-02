@@ -1,10 +1,9 @@
-//задача 3
-
 const pathInfo = require('./path-info');
 
 function showInfo(err, info) {
   if (err) {
     console.log('Возникла ошибка при получении информации');
+    console.error(err);
     console.log('-'.repeat(10));
     return;
   }

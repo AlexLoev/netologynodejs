@@ -7,18 +7,16 @@ var stream = require('stream');
 class Transform extends stream.Transform {
     constructor(options) {
         super(options);
-    }
-    _transform (chunk, encoding, done) {
-        this.push('\nhex:\n');
-        this.push(chunk.toString('hex'));
-        // не пойму как работает колбэк, но если его раскомментить то задача выполняется не корректно
-        // done(null, chunk); 
+    }          
+    _transform (chunk, encoding, afterTransform) {
+        let data = '\nhex:\n'+chunk.toString('hex') +'\n\n'
+        afterTransform(null, data)
     };
 };
 
 var transformStream = new Transform();
-var inputStream = fs.createReadStream('../data.txt',opt);
-var outputStream = fs.createWriteStream('../datamd5.txt');
+var inputStream = fs.createReadStream('./data.txt',opt);
+var outputStream = fs.createWriteStream('./stream-data.txt');
 
 outputStream.write('md5:\n')
 process.stdout.write('md5:\n')

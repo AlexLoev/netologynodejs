@@ -1,0 +1,94 @@
+<html lang="en">
+  head
+    <meta charset="UTF-8">
+    <title>Notebook MongoDb</title>
+    <link rel="stylesheet" type="text/css" href="/test.css">
+  body
+    <div class="app container">
+        <div class="sidebar light-grey card" id="mySidebar">
+            <div class="bar-block">                
+                <a class="bar-item button green" href="/">Home</a> 
+                <a class="bar-item button blue" href="/contacts">Contacts</a>
+                <a class="bar-item button orange" href="/contacts/new">Add new</a>
+            </div>
+        </div>
+        
+        <div class="container" style="margin-left:200px">
+            - var values = data;
+            table(class="table-all hoverable")
+                thead
+                    form(method="get")
+                        tr(class="light-grey")
+                            th(class="border")="Name"                               
+                            th(class="border")="Telefon"
+                            th(class="border")="Skype"
+                            th(class="border")=""
+                        tr(class="light-grey")
+                            th(class="border")=""                               
+                                input(class="input light-blue" name="name" type="text" value=query.name)
+                            th(class="border")=""
+                                input(class="input light-blue" name="tel" type="text" value=query.tel)
+                            th(class="border")=""
+                                input(class="input light-blue" name="skype" type="text" value=query.skype)
+                            th(class="border")=""                        
+                                input(class="check light-blue" name="fav" type="checkbox" checked=query.fav) 
+                                label=" Favorite"
+                                b=" "
+                                input(class="button light-green" type="submit" value="Поиск")
+                each val in values
+                    tr
+                        td(class="border")=val.name
+                        td(class="border")=val.tel
+                        td(class="border")=val.skype
+                        td(class="border")
+                            button(class="button green" onclick="window.location = '/contacts/"+val._id+"'")="Edit"
+                            button(class="button red" onclick="deletecontact('"+val._id+"')")="Del"
+                            if (val.fav=="on")
+                                button(class="button purple" onclick="setfav('"+val._id+"', 'off')")="Fav"
+                            else
+                                button(class="button indigo" onclick="setfav('"+val._id+"', 'on')")="Fav"
+
+            
+        </div>
+        
+        //- <div style="display: flex; justify-content: flex-end">
+            <div>I'm on the right</div>
+            <div>I'm on the left</div>
+        //- </div>
+        
+    </div>    
+    script.
+        function deletecontact(id) {
+            var xhr = new XMLHttpRequest();
+            var url = "/contacts/"+id;
+            xhr.open("DELETE", url);
+            xhr.send();
+            
+            xhr.onreadystatechange = function() {
+                if (xhr.readyState != 4) return;
+                if (xhr.status != 200) {
+                    alert(xhr.status + ': ' + xhr.statusText);
+                } else {
+                    alert(xhr.statusText);
+                    document.activeElement.parentElement.parentElement.style.display='none';
+                }
+
+            }            
+        };
+        function setfav(id,fav) {
+            var xhr = new XMLHttpRequest();
+            var url = "/contacts/setfav/"+id+"&"+fav;
+            xhr.open("PUT", url);
+            xhr.send();
+            
+            xhr.onreadystatechange = function() {
+                if (xhr.readyState != 4) return;
+                if (xhr.status != 200) {
+                    alert(xhr.status + ': ' + xhr.statusText);
+                } else {
+                    //alert(xhr.statusText);
+                    location.reload();
+                }
+
+            }            
+        };

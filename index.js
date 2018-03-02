@@ -41,3 +41,25 @@ setTimeout(() => {
 }, 20000);
 
 */
+
+//issue 5 streams Домашнее задание к лекции 1.4 «Потоки Stream» 
+//require('./classes/hashStream'); //Часть 1 + Часть 2
+//require('./classes/stream-c'); //Дополнительное задание
+
+//issue6 http Домашнее задание к лекции 2.1 «Создаем собственный переводчик, используя модуль http»
+
+// require('./classes/TranslateSrv'); //просто запускаем сервер, описанный в модуле TranslateSrv
+
+//issue7 API with express «Создаем простое API, используя express»
+
+//require('./classes/expresssrv'); //просто запускаем сервер для обработки запросов
+
+//issue8 express routes Домашнее задание к лекции 2.3 «Роутинг в express»
+
+//require('./classes/expresroutes'); //просто запускаем сервер для обработки запросов port 1338
+
+//issue10 Домашнее задание к лекции 3.1 «Основы MongoDB»
+//require('./classes/mongodbclient'); //запуск консольного приложения для MongoDB
+
+//issue11 Все, что нужно знать про запросы в MongoDB
+require('./classes/notebook/api'); //запускает сервер на порт 1337
