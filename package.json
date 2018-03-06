@@ -1,0 +1,29 @@
+{
+  "name": "tracker",
+  "version": "0.0.1",
+  "description": "tracker for assign tasks to users",
+  "main": "index.js",
+  "dependencies": {
+    "mongoose": "^5.0.9"
+  },
+  "devDependencies": {},
+  "scripts": {
+    "test": "node index"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/AlexLoev/netologynodejs.git"
+  },
+  "keywords": [
+    "tracker",
+    "mongoose",
+    "api",
+    "express"
+  ],
+  "author": "Alex Loev",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/AlexLoev/netologynodejs/issues"
+  },
+  "homepage": "https://github.com/AlexLoev/netologynodejs#readme"
+}
