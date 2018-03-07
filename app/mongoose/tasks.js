@@ -2,25 +2,32 @@ const mongoose = require('./db');
 const log = console.log;
 var Schema = mongoose.Schema;
 
+/** This Schema used for tracker tasks*/
 var TaskSchema = new Schema({
     title: String,
     author: String,
     body: String,
     assigned: [{user: String, date: Date}],
-    closed: {flag: Boolean, date: Date}
+    closed: {flag: Boolean, date: Date},
+    createdate: {type: Date, default: Date.now()}
 });
 
-var Task = mongoose.model('tasks', TaskSchema);
-
-function inserttask(newtask) {
+/**add new task to collection of tasks */
+TaskSchema.statics.insertnew = function(newtask) {
+    log('insert new task');
     log(newtask);
-    var t = new Task(newtask);
+    var t = this(newtask);
     t.save();
-    log('saved');
 };
 
-function updatetask(id, newtask) {
-    Task.findById(id, (err, res) => {
+/**update the task in collection of tasks by it's Objectid 
+ * newtask is an json object
+ * it can contains
+ *  @title String. If you want to change title of task
+ *  @closed JSON {flag: Boolean, date: Date}. if you want to close/open the task
+*/
+TaskSchema.statics.updatebyid = function(id, newtask) {
+    this.findById(id, (err, res) => {
         if (err) {
             log(err)
         } else {
@@ -34,14 +41,14 @@ function updatetask(id, newtask) {
                 }
                 res.save();
             } else {
-                log('not matched');
+                log('not matched task');
             }
         };
     });
 };
 
-function removetask(id) {
-    Task.findById(id, (err, res) => {
+TaskSchema.statics.removebyid = function(id) {
+    this.findById(id, (err, res) => {
         if (err) {
             log(err)
         } else {
@@ -49,14 +56,22 @@ function removetask(id) {
                 log(`remove task: ${res.title} (${res._id})`);
                 res.remove();
             } else {
-                log('not matched');
+                log('not matched task to remove');
             };
         };
     });
 };
 
-function findtask(title) {
-    Task.find({title: title}, (err, res) => {
+/**функция поиска задачи в коллекции tasks по вхождению word в элементы title или body*/
+TaskSchema.statics.findbyword = function(word) {
+    var wrapword =  new RegExp(word);
+    var filter = {
+        $or: [
+            {title: wrapword},
+            {body: wrapword}
+        ]
+    };
+    this.find(filter, (err, res) => {
         if (err) {
             log(err);
         } else {
@@ -66,15 +81,67 @@ function findtask(title) {
     });
 };
 
-// Task.find({title: 'make an insertdb method'}, (err, res) => {
-//     log(res)
-// })
-var now = Date.now();
-//log(now);
+TaskSchema.statics.findbyjson = function(task) {
+    this.find(task, (err, res) => {
+        if (err) {
+            log(err);
+        } else {
+            log(res)
+            return res
+        };
+    });
+};
 
-// inserttask({title: 'make an insertdb method', assigned: [{user: 'Alex', date: now}]})
+TaskSchema.statics.closebyid = function(id) {
+    var now = Date.now();
+    var closed = {
+        flag: true,
+        date: now
+    }
+    this.updatebyid(id, {closed: closed})
+};
 
-// updatetask('5a9ef4add76f372fec66d4af', {closed: {flag: true, date: now}});
+TaskSchema.statics.openbyid = function(id) {
+    var now = Date.now();
+    var closed = {
+        flag: false,
+        date: now
+    }
+    this.updatebyid(id, {closed: closed})
+};
 
-// findtask('tt1');
-// removetask('5a9ec0127ae1dd0cfcac4774')
+/** функция прикрепляет определенного пользователя к задаче */
+TaskSchema.statics.assigntouser = function(taskid, userid) {
+    this.findById(taskid, (err, res) => {
+        if (err) {
+            log(err);
+        } else {
+            if (res) {
+                var now = Date.now();
+                var userdata = {
+                    user: userid,
+                    date: now
+                }
+                if (res.assigned) {
+                    //проверяем уже прикрепленных пользователей, возможно уже есть
+                    var userindex = res.assigned.findIndex(elem => elem.user === userid);
+                    if (userindex != -1) {
+                        log(userindex)
+                        log('Задача уже была делегирована этому пользователю');
+                    } else {
+                        res.assigned.push(userdata);                        
+                    }
+                } else {
+                    res.assigned.push(userdata);
+                }
+                res.save();
+            } else {
+                log('cant find task to assign')
+            }
+        }
+    });
+};
+
+var Task = mongoose.model('tasks', TaskSchema);
+
+module.exports = Task;
