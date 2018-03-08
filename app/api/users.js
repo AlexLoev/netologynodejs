@@ -1,7 +1,19 @@
 const User = require('../mongoose/users');
 
+/**передает список пользователей и количество задач*/
+function getuserslist(req, res) {
+    User.userlist()
+    .then(list => {
+        res.json(list);
+    })
+    .catch(err => {
+        res.statusCode = 500;
+        res.statusMessage = err;
+    })
+}
+
 module.exports = {
-    User
+    getuserslist
 }
 
 // var Task = require('../mongoose/tasks');

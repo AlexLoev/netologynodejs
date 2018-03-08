@@ -5,8 +5,8 @@ const bodyparser = require('body-parser');
 const log = console.log;
 const appport = 1337;
 
-//подключаем методы для работы с пользователями
-const users = require('./users');
+
+
 
 /**подключаем к нашему приложению возможность разбирать json и urlencoded body in request*/
 app.use(bodyparser.json());
@@ -14,7 +14,16 @@ app.use(bodyparser.urlencoded({extended: true}));
 
 app.all('/', (req,res) => {
     res.end('use api as u wish');
+    res.statusCode = 200;
+    res.statusMessage = 'OK';
 });
+
+//подключаем методы для работы с пользователями
+const users = require('./users');
+const routerusers = express.Router();
+app.use('/users/',routerusers);
+
+routerusers.get('/', users.getuserslist);
 
 http.listen(appport, (err) => {
     if (err) {
