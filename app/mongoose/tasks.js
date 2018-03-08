@@ -1,13 +1,12 @@
 const mongoose = require('./db');
 const log = console.log;
 var Schema = mongoose.Schema;
-
 /** This Schema used for tracker tasks*/
 var TaskSchema = new Schema({
     title: String,
-    author: String,
+    author: {type: mongoose.Schema.ObjectId},
     body: String,
-    assigned: [{user: String, date: Date}],
+    assigned: [{user: {type: mongoose.Schema.ObjectId}, date: Date}],
     closed: {flag: Boolean, date: Date},
     createdate: {type: Date, default: Date.now()}
 });
@@ -24,6 +23,7 @@ TaskSchema.statics.insertnew = function(newtask) {
  * newtask is an json object
  * it can contains
  *  @title String. If you want to change title of task
+ *  @author String. If you want to change author of task
  *  @closed JSON {flag: Boolean, date: Date}. if you want to close/open the task
 */
 TaskSchema.statics.updatebyid = function(id, newtask) {
@@ -38,6 +38,9 @@ TaskSchema.statics.updatebyid = function(id, newtask) {
                 };
                 if (newtask.closed) {
                     res.closed = newtask.closed;
+                };
+                if (newtask.author) {
+                    res.author = newtask.author;
                 }
                 res.save();
             } else {
@@ -124,7 +127,7 @@ TaskSchema.statics.assigntouser = function(taskid, userid) {
                 }
                 if (res.assigned) {
                     //проверяем уже прикрепленных пользователей, возможно уже есть
-                    var userindex = res.assigned.findIndex(elem => elem.user === userid);
+                    var userindex = res.assigned.findIndex(elem => elem.user == userid);
                     if (userindex != -1) {
                         log(userindex)
                         log('Задача уже была делегирована этому пользователю');

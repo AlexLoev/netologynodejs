@@ -1,8 +1,9 @@
 const mongoose = require('./db');
 const log = console.log;
-var Schema = mongoose.Schema;
+const Schema = mongoose.Schema;
+const ObjectID = mongoose.Types.ObjectID;
 
-var UserSchema = new Schema({
+const UserSchema = new Schema({
     fname: String,
     lname: String,
     sname: String
@@ -67,6 +68,56 @@ UserSchema.statics.findbyjson = function(user) {
             log(res);
              return res
         };
+    });
+};
+
+/**Функция формирует список пользователей и количество задач.
+ * Элементы массива: 
+ * 
+ * @_id ObjectID пользователя,
+ * @fullname ФИО пользователя
+ * @tasks количество назначенных задач
+ * @closed количество закрытых задач
+ */
+UserSchema.statics.userlist = function() {
+    this.aggregate([
+        // подключаем коллекцию с задачами
+        {
+            $lookup: {
+                from: 'tasks',
+                localField: '_id',
+                foreignField: 'assigned.user',
+                as: 'usertasks'
+            }
+        },
+        // разворачиваем массив задач с отображением пользователей, у которых нет задач
+        {$unwind: {path: '$usertasks', preserveNullAndEmptyArrays: true}},
+        // формируем плоский список для последующей группировки в итоговый массив
+        {$project: {
+            fullname: {$concat: ['$lname',' ','$fname',' ','$sname']}, 
+            taskid: '$usertasks._id',
+            //считаем только закрытые задачи
+            closed: {
+                $cond: {
+                    if: '$usertasks.closed.flag',
+                    then: 1,
+                    else: 0
+                }
+            },
+            //считаем все назначенные задачи
+            tasks: {
+                $cond: {
+                    if: {$eq: [{$ifNull: ['$usertasks','']},'']},
+                    then: 0,
+                    else: 1
+                }
+            }        
+        }},
+        {$group: {_id: '$_id', fullname: {$first: '$fullname'}, tasks: {$sum: '$tasks'}, closed: {$sum: '$closed'} }}
+    ]).
+    exec((err, res) => {
+        log(res);
+        return res
     });
 };
 
