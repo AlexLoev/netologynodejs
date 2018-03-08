@@ -1,8 +1,9 @@
 const mongoose = require('./db');
 const log = console.log;
-var Schema = mongoose.Schema;
+const Schema = mongoose.Schema;
+
 /** This Schema used for tracker tasks*/
-var TaskSchema = new Schema({
+const TaskSchema = new Schema({
     title: String,
     author: {type: mongoose.Schema.ObjectId},
     body: String,
