@@ -4,7 +4,7 @@ const uri = 'mongodb://127.0.0.1';
 const dbname = 'tracker';
 
 mongoose.connect(`${uri}/${dbname}`,(err, db) => {
-    log('connect')
+    log(`mongoose connected at port ${db.port}`)
 });
 
 // var db = mongoose.connection;

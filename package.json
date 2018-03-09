@@ -1,6 +1,6 @@
 {
   "name": "tracker",
-  "version": "0.0.1",
+  "version": "0.1.0",
   "description": "tracker for assign tasks to users",
   "main": "index.js",
   "dependencies": {

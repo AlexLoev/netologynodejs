@@ -17,56 +17,83 @@ UserSchema.virtual('fullname').get(function() {
 UserSchema.statics.insertnew = function(newuser) {
     log('insert new user');
     log(newuser);
-    var user = this(newuser);
-    user.save();
+    return new Promise((resolve, reject) => {
+        var user = this(newuser);
+        user.save((err, res) => {
+            if (err) {
+                reject(err);
+            } else {
+                log(res);
+                resolve(res);
+            }   
+        });
+    });
 };
 
 UserSchema.statics.updatebyid = function(id, newuser) {
-    this.findById(id, (err, res) => {
-        if (err) {
-            log(err)
-        } else {
-            if (res) {
-                log(`update user: ${res.fullname} (${res._id})`);
-                if (newuser.fname) {
-                    res.fname = newuser.fname
-                };
-                if (newuser.lname) {
-                    res.lname = newuser.lname;
-                }
-                if (newuser.sname) {
-                    res.sname = newuser.sname;
-                }
-                res.save();
+    return new Promise((resolve, reject) => {
+        this.findById(id, (err, user) => {
+            if (err) {
+                log(err)
             } else {
-                log('not matched user');
-            }
-        };
-    });
+                if (user) {
+                    log(`update user: ${user.fullname} (${user._id})`);
+                    if (newuser.fname) {
+                        user.fname = newuser.fname
+                    };
+                    if (newuser.lname) {
+                        user.lname = newuser.lname;
+                    }
+                    if (newuser.sname) {
+                        user.sname = newuser.sname;
+                    }
+                    user.save((err, user) => {
+                        if (err) {
+                            reject(err);
+                        } else {
+                            log(user);
+                            resolve(user);
+                        }   
+                    });
+                } else {
+                    log('not matched user');
+                }
+            };
+        });
+    })
 };
 
 UserSchema.statics.removebyid = function(id) {
-    this.findById(id, (err, res) => {
-        if (err) {
-            log(err)
-        } else {
-            if (res) {
-                log(`remove user: ${res.fullname} (${res._id})`);
-                res.remove();
+    return new Promise((resolve, reject) => {
+        this.findById(id, (err, user) => {
+            if (err) {
+                log(err)
             } else {
-                log('not matched user to remove');
+                if (user) {
+                    log(`remove user: ${user.fullname} (${user._id})`);
+                    user.remove((err, delres) => {
+                        if (err) {
+                            reject(err);
+                        } else {
+                            log(delres);
+                            resolve(delres);
+                        }   
+                    });
+                } else {
+                    log('not matched user to remove');
+                };
             };
-        };
-    });
+        });
+    });    
 };
 
-UserSchema.statics.findbyjson = function(user) {
-    this.find(user, (err, res) => {
+UserSchema.statics.findbyjson = function(userjson) {
+    this.find(userjson, (err, user) => {
         if (err) {
             log(err);
         } else {
-            log(res);
-             return res
+            log(user);
+             return user
         };
     });
 };
@@ -114,14 +141,20 @@ UserSchema.statics.userlist = function() {
                     }
                 }        
             }},
-            {$group: {_id: '$_id', fullname: {$first: '$fullname'}, tasks: {$sum: '$tasks'}, closed: {$sum: '$closed'} }}
+            {$group: {
+                _id: '$_id',
+                fullname: {$first: '$fullname'}, 
+                tasks: {$sum: '$tasks'}, 
+                closed: {$sum: '$closed'} 
+            }},
+            {$sort : { fullname : 1} }
         ]).
-        exec((err, res) => {
+        exec((err, list) => {
             if (err) {
                 reject(err);
             } else {
-                log(res);
-                resolve(res);
+                log(list);
+                resolve(list);
             }
         });
     })

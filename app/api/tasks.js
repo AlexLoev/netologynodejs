@@ -1,73 +1,113 @@
-const User = require('../mongoose/users');
+const tasks = require('../mongoose/tasks');
 
-/**передает список пользователей и количество задач*/
-function getuserslist(req, res) {
-    User.userlist()
+function gettaskslist(req, res) {
+    tasks.findbyword()
     .then(list => {res.json(list)})
     .catch(err => dberr(err, res));
 };
 
-function newuser(req, res){
-    if (req.body.fname) {
-        User.insertnew(req.body)
+function newtask(req, res){
+    if (req.body.title) {
+        tasks.insertnew(req.body)
         .then(resolve => {res.json(resolve)})
         .catch(err => dberr(err, res));
     } else {
         res.statusCode = 400;
-        res.end(`Please, add a user JSON in body`);        
+        res.end(`Please, add a task JSON in body`);        
     }
 };
 
 function findbyid(req, res) {
     if (req.params.id) {
-        User.findById(req.params.id)
+        tasks.findById(req.params.id)
         .then(resolve => {res.json(resolve)})
         .catch(err => dberr(err, res));
     } else {
         res.statusCode = 400;
-        res.end('Please, enter a valid user id');
+        res.end('Please, enter a valid task id');
     }    
 };
 
 function removebyid(req, res) {
     if (req.params.id) {
-        User.removebyid(req.params.id)
+        tasks.removebyid(req.params.id)
         .then(resolve => {res.json(resolve)})
         .catch(err => dberr(err, res));
     } else {
         res.statusCode = 400;
-        res.end('Please, enter a valid user id');
+        res.end('Please, enter a valid task id');
     }    
 };
 
-function edituser(req, res) {
+function edittask(req, res) {
     if (req.params.id) {
-        if (req.body.fname) {
-            User.updatebyid(req.params.id, req.body)
+        if (req.body.title) {
+            tasks.updatebyid(req.params.id, req.body)
             .then(resolve => {res.json(resolve)})
             .catch(err => dberr(err, res));
         } else {
             res.statusCode = 400;
-            res.end(`Please, add a user JSON in body`);     
+            res.end(`Please, add a task JSON in body`);     
         }
     } else {
         res.statusCode = 400;
-        res.end('Please, enter a valid user id');
+        res.end('Please, enter a valid task id');
     }      
-}
+};
+
+function closetask(req, res) {
+    if (req.params.id) {
+        tasks.closebyid(req.params.id)
+        .then(task => {res.json(task)})
+        .catch(err => dberr(err, res));
+    } else {
+        res.statusCode = 400;
+        res.end('Please, enter a valid task id');
+    }      
+};
+
+function opentask(req, res) {
+    if (req.params.id) {
+        tasks.openbyid(req.params.id)
+        .then(task => {res.json(task)})
+        .catch(err => dberr(err, res));
+    } else {
+        res.statusCode = 400;
+        res.end('Please, enter a valid task id');
+    }      
+};
+
+function assigntouser(req, res) {
+    if (req.params.id) {
+        if (req.body.userid) {
+            tasks.assigntouser(req.params.id, req.body.userid)
+            .then(resolve => {res.json(resolve)})
+            .catch(err => dberr(err, res));
+        } else {
+            res.statusCode = 400;
+            res.end('Please, enter a valid userid in JSON format');
+        }
+    } else {
+        res.statusCode = 400;
+        res.end('Please, enter a valid task id');
+    }      
+};
 
 function dberr(err, res) {
     res.statusCode = 500;
     res.statusMessage = err;
-    res.end('Mongoose Error in users collection');
+    res.end('Mongoose Error in tasks collection');
 };
 
 module.exports = {
-    getuserslist,
-    newuser,
+    gettaskslist,
+    newtask,
     findbyid,
     removebyid,
-    edituser
+    edittask,
+    closetask,
+    opentask,
+    assigntouser
 }
 
 // var Task = require('../mongoose/tasks');

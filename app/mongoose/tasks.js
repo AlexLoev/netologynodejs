@@ -16,8 +16,17 @@ const TaskSchema = new Schema({
 TaskSchema.statics.insertnew = function(newtask) {
     log('insert new task');
     log(newtask);
-    var t = this(newtask);
-    t.save();
+    return new Promise((resolve, reject) => {
+        var task = this(newtask);
+        task.save((err, res) => {
+            if (err) {
+                reject(err);
+            } else {
+                log(res);
+                resolve(res);
+            }   
+        });
+    });
 };
 
 /**update the task in collection of tasks by it's Objectid 
@@ -28,41 +37,59 @@ TaskSchema.statics.insertnew = function(newtask) {
  *  @closed JSON {flag: Boolean, date: Date}. if you want to close/open the task
 */
 TaskSchema.statics.updatebyid = function(id, newtask) {
-    this.findById(id, (err, res) => {
-        if (err) {
-            log(err)
-        } else {
-            if (res) {
-                log(`update task: ${res.title} (${res._id})`);
-                if (newtask.title) {
-                    res.title = newtask.title
-                };
-                if (newtask.closed) {
-                    res.closed = newtask.closed;
-                };
-                if (newtask.author) {
-                    res.author = newtask.author;
-                }
-                res.save();
+    return new Promise((resolve, reject) => {
+        this.findById(id, (err, task) => {
+            if (err) {
+                log(err)
             } else {
-                log('not matched task');
-            }
-        };
+                if (task) {
+                    log(`update task: ${task.title} (${task._id})`);
+                    if (newtask.title) {
+                        task.title = newtask.title
+                    };
+                    if (newtask.closed) {
+                        task.closed = newtask.closed;
+                    };
+                    if (newtask.author) {
+                        task.author = newtask.author;
+                    }
+                    task.save((err, task) => {
+                        if (err) {
+                            reject(err);
+                        } else {
+                            log(task);
+                            resolve(task);
+                        }   
+                    });
+                } else {
+                    log('not matched task');
+                }
+            };
+        });
     });
 };
 
 TaskSchema.statics.removebyid = function(id) {
-    this.findById(id, (err, res) => {
-        if (err) {
-            log(err)
-        } else {
-            if (res) {
-                log(`remove task: ${res.title} (${res._id})`);
-                res.remove();
+    return new Promise((resolve, reject) => {
+        this.findById(id, (err, task) => {
+            if (err) {
+                log(err)
             } else {
-                log('not matched task to remove');
+                if (task) {
+                    log(`remove task: ${task.title} (${task._id})`);
+                    task.remove((err, delres) => {
+                        if (err) {
+                            reject(err);
+                        } else {
+                            log(delres);
+                            resolve(delres);
+                        }   
+                    });
+                } else {
+                    log('not matched task to remove');
+                };
             };
-        };
+        });
     });
 };
 
@@ -75,14 +102,16 @@ TaskSchema.statics.findbyword = function(word) {
             {body: wrapword}
         ]
     };
-    this.find(filter, (err, res) => {
-        if (err) {
-            log(err);
-        } else {
-            log(res)
-            return res
-        };
-    });
+    return new Promise((resolve, reject) => {
+        this.find(filter, (err, tasks) => {
+            if (err) {
+                reject(err);
+            } else {
+                log(tasks);
+                resolve(tasks);
+            };
+        });
+    })
 };
 
 TaskSchema.statics.findbyjson = function(task) {
@@ -102,7 +131,11 @@ TaskSchema.statics.closebyid = function(id) {
         flag: true,
         date: now
     }
-    this.updatebyid(id, {closed: closed})
+    return new Promise((resolve, reject) => {
+        this.updatebyid(id, {closed: closed})
+        .then(task => {resolve(task)})
+        .catch(err => {reject(err)});
+    });
 };
 
 TaskSchema.statics.openbyid = function(id) {
@@ -111,38 +144,51 @@ TaskSchema.statics.openbyid = function(id) {
         flag: false,
         date: now
     }
-    this.updatebyid(id, {closed: closed})
+    return new Promise((resolve, reject) => {
+        this.updatebyid(id, {closed: closed})
+        .then(task => {resolve(task)})
+        .catch(err => {reject(err)});
+    });
 };
 
 /** функция прикрепляет определенного пользователя к задаче */
 TaskSchema.statics.assigntouser = function(taskid, userid) {
-    this.findById(taskid, (err, res) => {
-        if (err) {
-            log(err);
-        } else {
-            if (res) {
-                var now = Date.now();
-                var userdata = {
-                    user: userid,
-                    date: now
-                }
-                if (res.assigned) {
-                    //проверяем уже прикрепленных пользователей, возможно уже есть
-                    var userindex = res.assigned.findIndex(elem => elem.user == userid);
-                    if (userindex != -1) {
-                        log(userindex)
-                        log('Задача уже была делегирована этому пользователю');
-                    } else {
-                        res.assigned.push(userdata);                        
-                    }
-                } else {
-                    res.assigned.push(userdata);
-                }
-                res.save();
+    return new Promise((resolve, reject) => {
+        this.findById(taskid, (err, task) => {
+            if (err) {
+                reject(err);
             } else {
-                log('cant find task to assign')
+                if (task) {
+                    var now = Date.now();
+                    var userdata = {
+                        user: userid,
+                        date: now
+                    }
+                    if (task.assigned) {
+                        //проверяем уже прикрепленных пользователей, возможно уже есть
+                        var userindex = task.assigned.findIndex(elem => elem.user == userid);
+                        if (userindex != -1) {
+                            log(userindex)
+                            resolve('Задача уже была делегирована этому пользователю');
+                        } else {
+                            task.assigned.push(userdata);                        
+                        }
+                    } else {
+                        task.assigned.push(userdata);
+                    }
+                    task.save((err, savedtask) => {
+                        if (err) {
+                            reject(err);
+                        } else {
+                            log(savedtask);
+                            resolve(savedtask);
+                        }   
+                    });
+                } else {
+                    resolve('cant find task to assign')
+                }
             }
-        }
+        });
     });
 };
 
