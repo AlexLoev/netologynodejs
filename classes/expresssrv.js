@@ -1,5 +1,5 @@
-const express = require('express');
-const app = express();
+var express = require('express');
+var app = express();
 const bodyparser = require('body-parser');
 var RPC = require('../classes/rpcmethods');
 
@@ -8,6 +8,7 @@ const log = console.log;
 
 
 app.use(bodyparser.json());
+app.use(bodyparser.urlencoded({ extended: false }));
 
 app.get('/users/',function(req,res) {
     res.json(usersdata);
@@ -20,6 +21,9 @@ app.post('/users/',function(req,res) {
             id: usersdata.length-1,
             user: req.body
         });        
+    } else {
+        res.statusCode = 400;
+        res.end(`Please, add a name of a user you wish to update`);        
     }
 });
 
@@ -93,6 +97,9 @@ app.post('/rpc',function(req, res) {
     };
 });
     
-app.listen(1337, () => {
-    log('app listen on port 1337')
-});
+
+httpServer = require('http').createServer(app);
+httpServer.listen(1337);
+
+
+module.exports = httpServer;
