@@ -100,9 +100,7 @@ describe('REST API', () => {
         });
     });
 
-
-
     after(() => {
         app.close();
     })
-})
+});
